@@ -95,11 +95,22 @@ const deleteTour = (req, res) => {
 
 //We should always specify version of api, so when we upgrade we can simply change to version 2.
 //App Routes
-app.get('/api/v1/tours', getAllTours);
-app.get('/api/v1/tours/:id', getTour);
-app.post('/api/v1/tours', postTour);
-app.patch('/api/v1/tours/:id', patchTour);
-app.delete('/api/v1/tours/:id', deleteTour);
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', postTour);
+// app.patch('/api/v1/tours/:id', patchTour);
+// app.delete('/api/v1/tours/:id', deleteTour); --> Refactored to:
+
+app
+    .route('/api/v1/tours')
+    .get(getAllTours)
+    .post(getAllTours);
+
+app
+    .route('/api/v1/tours/:id')
+    .post(postTour)
+    .get(getTour)
+    .delete(deleteTour)
 
 app.listen(port, () => {
     console.log(`App is now running on port ${port}`);
