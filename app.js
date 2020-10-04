@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // for better approch, use environment valiable to ensure if 3000 is busy then server can assign any free port , it is neccissary for production
 
 //Using middleware
 app.use(express.json());
