@@ -3,9 +3,16 @@ const fs = require('fs');
 const { pathToFileURL } = require('url');
 const app = express();
 const port = 3000;
+const morgan = require('morgan');
 
-//Using middleware
+//Using middlewares
+app.use(morgan('dev'));
 app.use(express.json());
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+})
 
 //Reading files
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
@@ -13,8 +20,11 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simpl
 //ALL ROUTE HANDLERS
 
 const getAllTours = (req, res) => {
+    console.log(req.requestTime);
+
     res.status(200).json({
         status: 'Success',
+        requestedAt: req.requestTime,
         results: tours.length,
         data: {
             tours
@@ -92,6 +102,41 @@ const deleteTour = (req, res) => {
     });
 }
 
+const getAllUsers = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined!'
+    });
+}
+
+const updateUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined!'
+    });
+}
+
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined!'
+    });
+}
+
+const getUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined!'
+    });
+}
+
+const deleteUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined!'
+    });
+}
+
 
 //We should always specify version of api, so when we upgrade we can simply change to version 2.
 //App Routes
@@ -101,16 +146,33 @@ const deleteTour = (req, res) => {
 // app.patch('/api/v1/tours/:id', patchTour);
 // app.delete('/api/v1/tours/:id', deleteTour); --> Refactored to:
 
-app
-    .route('/api/v1/tours')
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter
+    .route('/')
     .get(getAllTours)
     .post(getAllTours);
 
-app
-    .route('/api/v1/tours/:id')
+tourRouter
+    .route('/:id')
     .post(postTour)
     .get(getTour)
-    .delete(deleteTour)
+    .delete(deleteTour);
+
+userRouter
+    .route('/')
+    .get(getAllUsers)
+    .post(createUser);
+
+userRouter
+    .route('/:id') 
+    .get(getUser)
+    .patch(updateUser)
+    .delete(deleteUser);
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 app.listen(port, () => {
     console.log(`App is now running on port ${port}`);
