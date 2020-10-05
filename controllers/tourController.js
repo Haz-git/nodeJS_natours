@@ -2,6 +2,29 @@ const fs = require('fs');
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
+exports.checkBody = (req, res, next) => {
+    if (!req.body.name || !req.body.price) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'The request body does not have a name nor price'
+        });
+    }
+    next();
+}
+
+exports.checkID = (req, res, next, val) => {
+
+    console.log(`Tour id is ${val}`);
+
+    if (req.params.id * 1 > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
+        });
+    }
+    next();
+}
+
 exports.getAllTours = (req, res) => {
     console.log(req.requestTime);
 
@@ -16,17 +39,8 @@ exports.getAllTours = (req, res) => {
 }
 
 exports.getTour = (req, res) => {
-    console.log(req.params);
-
-    const id = req.params.id * 1; //Convert string to number 
+    const id = req.params.id * 1;
     const tour = tours.find(el => el.id === id);
-
-    if (!tour) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        });
-    }
 
     res.status(200).json({
         status: 'Success',
@@ -36,9 +50,9 @@ exports.getTour = (req, res) => {
     });
 }
 
-exports.postTour = (req, res) => {
+exports.createTour = (req, res) => {
     console.log(req.body);
-    //req.body availiable on request because we used middleware.
+    //req.body availiable on request object because we used middleware.
     const newId = tours[tours.length -1].id + 1;
     const newTour = Object.assign({
         id: newId
@@ -56,13 +70,8 @@ exports.postTour = (req, res) => {
     })
 }
 
-exports.patchTour = (req, res) => {
-    if (req.params.id * 1 > tours.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        });
-    }
+exports.updateTour = (req, res) => {
+
     res.status(200).json({
         status: 'Success',
         data: {
@@ -72,12 +81,7 @@ exports.patchTour = (req, res) => {
 }
 
 exports.deleteTour = (req, res) => {
-    if (req.params.id * 1 > tours.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        });
-    }
+
     //Status code 204 for 'no content'
     res.status(204).json({
         status: 'Success',
