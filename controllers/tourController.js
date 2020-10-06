@@ -1,19 +1,9 @@
-const Tour = require('./../models/tourModel');
+const Tour = require('../models/tourModel');
 
 //Not needed placeholder dummy database
 // const tours = JSON.parse(
 // 	fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
-
-exports.checkBody = (req, res, next) => {
-	if (!req.body.name || !req.body.price) {
-		return res.status(400).json({
-			status: 'fail',
-			message: 'The request body does not have a name nor price',
-		});
-	}
-	next();
-};
 
 exports.getAllTours = (req, res) => {
 	console.log(req.requestTime);
@@ -40,13 +30,22 @@ exports.getTour = (req, res) => {
 	// });
 };
 
-exports.createTour = (req, res) => {
-	res.status(201).json({
-		status: 'Success',
-		// data: {
-		// 	tour: newTour,
-		// },
-	});
+exports.createTour = async (req, res) => {
+	try {
+		const newTour = await Tour.create(req.body);
+
+		res.status(201).json({
+			status: 'Success',
+			data: {
+				tour: newTour,
+			},
+		});
+	} catch (err) {
+		res.status(400).json({
+			status: 'Fail',
+			message: err,
+		});
+	}
 };
 
 exports.updateTour = (req, res) => {
