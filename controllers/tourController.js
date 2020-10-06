@@ -82,10 +82,19 @@ exports.updateTour = async (req, res) => {
     }
 };
 
-exports.deleteTour = (req, res) => {
-    //Status code 204 for 'no content'
-    res.status(204).json({
-        status: 'Success',
-        data: null, //This data is null cause no new information on delete.
-    });
+exports.deleteTour = async (req, res) => {
+    try {
+        await Tour.findByIdAndDelete(req.params.id);
+
+        //Status code 204 for 'no content'
+        res.status(204).json({
+            status: 'Success',
+            data: null, //This data is null cause no new information on delete.
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'Fail',
+            message: err,
+        });
+    }
 };
