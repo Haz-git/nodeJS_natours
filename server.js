@@ -12,17 +12,13 @@ const DB = process.env.DATABASE.replace(
 );
 
 mongoose
+	//Local connection: .connect(process.env.DATABASE_LOCAL, {})
 	.connect(DB, {
 		useNewUrlParser: true,
 		useCreateIndex: true,
 		useFindAndModify: false,
 	})
-	.then((con) => {
-		console.log(con.connections);
-		console.log('DB Connection to Atlas Successful');
-	});
-
-// console.log(process.env);
+	.then(() => console.log('DB Connection to Atlas Successful'));
 
 const port = process.env.PORT || 3000;
 

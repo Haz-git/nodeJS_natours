@@ -1,4 +1,5 @@
 const express = require('express');
+
 const app = express();
 const morgan = require('morgan');
 
@@ -7,14 +8,14 @@ const userRouter = require('./routes/userRoutes');
 
 //Using middlewares
 if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
+	app.use(morgan('dev'));
 }
 
 app.use(express.json());
 
 app.use((req, res, next) => {
-    req.requestTime = new Date().toISOString();
-    next();
+	req.requestTime = new Date().toISOString();
+	next();
 });
 
 //We should always specify version of api, so when we upgrade we can simply change to version 2.
