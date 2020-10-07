@@ -19,13 +19,20 @@ exports.getAllTours = async (req, res) => {
         //Advanced Filtering: lte/gte:
         let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/(\bgte|gt|lte|lt\b)/g, match => `$${match}`);
-        console.log(JSON.parse(queryStr));
-
 
         // We cannot use await as follows:
         // const tours = await Tour.find(queryObj);
         // This is because we want to build the query object, we cannot chain other methods to query object when we await it--this is because our query object is executed immediately due to await.
-        const query = Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
+
+        //Implementing Sorting:
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);
+        } else {
+            //Default sort if no sort query specified.
+            query = query.sort('-createdAt');
+        }
 
         //Execute query
         const tours = await query;
