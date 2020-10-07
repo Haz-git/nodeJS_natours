@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 
 //Creating Schema for Tour
@@ -49,6 +50,7 @@ const tourSchema = new mongoose.Schema({
 	createdAt: {
 		type: Date,
 		default: Date.now(),
+		select: false,
 	},
 	startDate: [Date],
 });
