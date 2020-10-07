@@ -21,7 +21,7 @@ exports.getAllTours = async (req, res) => {
         console.log(req.query, queryObj);
         // We cannot use await as follows:
         // const tours = await Tour.find(queryObj);
-        // This is because we want to build the query object, we cannot chain other methods to query object when we await it.
+        // This is because we want to build the query object, we cannot chain other methods to query object when we await it--this is because our query object is executed immediately due to await.
         const query = Tour.find(queryObj);
 
         //Execute query
