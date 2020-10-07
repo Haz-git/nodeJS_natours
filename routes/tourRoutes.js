@@ -4,6 +4,11 @@ const tourController = require('../controllers/tourController');
 const router = express.Router();
 
 router
+    .route('/top-5-cheap')
+    .get(tourController.aliasTopTours, tourController.getAllTours);
+//We create a middleware (aliasTopTours) that manipulates the request object to simulate a query string with all the parameters necessary to get the top 5 tours.
+
+router
     .route('/')
     .get(tourController.getAllTours)
     .post(tourController.createTour);

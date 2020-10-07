@@ -5,6 +5,14 @@ const Tour = require('../models/tourModel');
 // 	fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
 
+exports.aliasTopTours = (req, res, next) => {
+    //In this middleware, we alter the request object before it heads to getAllTours:
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
+}
+
 exports.getAllTours = async (req, res) => {
     try {
         //Create new obj with all key-value pairs as req.query.
