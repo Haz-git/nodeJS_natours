@@ -19,8 +19,15 @@ exports.getAllTours = async (req, res) => {
         excludedFields.forEach(el => delete queryObj[el]);
 
         console.log(req.query, queryObj);
+        // We cannot use await as follows:
+        // const tours = await Tour.find(queryObj);
+        // This is because we want to build the query object, we cannot chain other methods to query object when we await it.
+        const query = Tour.find(queryObj);
 
-        const tours = await Tour.find(queryObj);
+        //Execute query
+        const tours = await query;
+
+        //Send Response
 
         res.status(200).json({
             status: 'Success',
