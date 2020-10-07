@@ -7,9 +7,20 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
     try {
-        console.log(req.query);
+        //Create new obj with all key-value pairs as req.query.
+        const queryObj = {
+            ...req.query
+        }
 
-        const tours = await Tour.find(req.query);
+        //Create an array of keys we want to exclude:
+        const excludedFields = ['page', 'sort', 'limit', 'fields'];
+
+        //loop through array and delete keys from new query obj.
+        excludedFields.forEach(el => delete queryObj[el]);
+
+        console.log(req.query, queryObj);
+
+        const tours = await Tour.find(queryObj);
 
         res.status(200).json({
             status: 'Success',
