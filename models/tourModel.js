@@ -53,8 +53,19 @@ const tourSchema = new mongoose.Schema({
 		select: false,
 	},
 	startDates: [Date],
+}, {
+	toJSON: {
+		virtuals: true,
+	},
+	toObject: {
+		virtuals: true,
+	},
 });
 //Trim cuts all the whitespace.
+
+tourSchema.virtual('durationWeeks').get(function () {
+	return this.duration / 7;
+});
 
 //Creating Model from Schema
 const Tour = mongoose.model('Tour', tourSchema);
