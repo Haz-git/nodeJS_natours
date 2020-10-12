@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const {
+    use
+} = require('../routes/userRoutes');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,6 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter a password.'],
         minlength: [6, 'Please enter a password over 6 characters'],
+        select: false,
     },
     passwordConfirm: {
         type: String,
@@ -49,6 +53,13 @@ userSchema.pre('save', async function (next) {
     this.passwordConfirm = undefined;
     next();
 });
+
+//Creating instance method: method that is availiable to all documents in a given collection:
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+} //Returns true if passwords are the same, false otherwise.
+
+
 
 const User = mongoose.model('User', userSchema);
 
