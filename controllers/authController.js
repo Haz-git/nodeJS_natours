@@ -73,5 +73,5 @@ exports.protect = catchAsync(async (req, res, next) => {
     //4)Check if user changed password after the JWT was issued
 
     //next() gives access to route.
-    return next();
+    next();
 });
