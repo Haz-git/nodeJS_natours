@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -31,17 +32,22 @@ const userSchema = new mongoose.Schema({
             validator: function (el) {
                 return el === this.password;
             },
-            message: 'Passwords do not match'
-        }
-    }
+            message: 'Passwords do not match',
+        },
+    },
 });
 
 //Use pre-save hook for encryption.
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', async function (next) {
+    //Check if user has only modified password. If user has not modified password, next().
     if (!this.isModified('password')) return next();
 
-
+    //Use bcrypt to hash password--(hash() is asynchronous) enter the password and 'cost'. Increase of Cost = increase of time needed to hash password. Good Standard is 12.
+    this.password = await bcrypt.hash(this.password, 12);
+    //Set passwordConfirm to undefined, as it is not needed after initial confirmation of two passwords-- We don't want this persisted to database.
+    this.passwordConfirm = undefined;
+    next();
 });
 
 const User = mongoose.model('User', userSchema);
