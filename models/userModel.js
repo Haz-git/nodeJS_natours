@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const userModel = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'A new user must have a name!'],
@@ -26,9 +26,24 @@ const userModel = new mongoose.Schema({
     passwordConfirm: {
         type: String,
         required: [true, 'Please confirm your password'],
+        validate: {
+            //Validation method only works on create / save.
+            validator: function (el) {
+                return el === this.password;
+            },
+            message: 'Passwords do not match'
+        }
     }
 });
 
-const User = mongoose.model('User', userModel);
+//Use pre-save hook for encryption.
+
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password')) return next();
+
+
+});
+
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
