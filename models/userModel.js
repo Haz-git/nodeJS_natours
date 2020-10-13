@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
             message: 'Passwords do not match',
         },
     },
+    passwordChangedAt: Date
 });
 
 //Use pre-save hook for encryption.
@@ -56,6 +57,15 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
     return await bcrypt.compare(candidatePassword, userPassword);
 } //Returns true if passwords are the same, false otherwise.
 
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        return JWTTimestamp < changedTimestamp;
+    }
+
+    return false;
+}
 
 
 const User = mongoose.model('User', userSchema);

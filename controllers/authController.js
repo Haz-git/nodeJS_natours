@@ -22,7 +22,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordConfirm: req.body.passwordConfirm,
     });
 
-    const token = signToken(newUser.__id);
+    const token = signToken(newUser._id);
 
     res.status(201).json({
         status: 'Success!',
@@ -51,7 +51,7 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect email or password!', 401));
     }
     //3. If everything is OK, send token to client
-    const token = signToken(user.__id);
+    const token = signToken(user._id);
     res.status(200).json({
         status: 'Success!',
         token,
@@ -69,16 +69,22 @@ exports.protect = catchAsync(async (req, res, next) => {
     if (!token) {
         return next(new AppError(`You are not logged in! Please log in to access this feature.`, 401));
     }
+
     //2) Verification Token
     // We are using the 'utils' built-in library to make jwt.verify() return a promise.
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
-
-    console.log(decoded);
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     //3) Check if User still exists
 
+    const freshUser = await User.findById(decoded.id);
+    if (!freshUser) {
+        return next(new AppError('The user belonging to this token does no longer exist.', 401));
+    }
     //4)Check if user changed password after the JWT was issued
-
-    //next() gives access to route.
+    //Create another instance method -- alot of code, so put in model,
+    if (freshUser.changedPasswordAfter(decoded.iat)) {
+        return next(new AppError(`User recently changed password, please log in again.`, 401));
+    }
+    //next() gives access to protected route.
     next();
 });
