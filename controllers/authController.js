@@ -111,6 +111,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     }
     //2. Generate the random reset token -- This will be an instance method because it has to do more with user data (model)
 
+    const resetToken = user.createPasswordResetToken() // This function modifies the data, but doesn't save the data:
+    await user.save({ validateBeforeSave: false });
+
     //3. Sent it to user's email
 });
 
