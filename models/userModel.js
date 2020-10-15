@@ -1,6 +1,8 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { stringify } = require('querystring');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -41,7 +43,9 @@ const userSchema = new mongoose.Schema({
             message: 'Passwords do not match',
         },
     },
-    passwordChangedAt: Date
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date
 });
 
 //Use pre-save hook for encryption.
@@ -70,6 +74,15 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     }
 
     return false;
+}
+
+userSchema.methods.createPasswordResetToken = function() {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
 }
 
 
